@@ -1,0 +1,36 @@
+TEMA 1 APD 
+Functii principale:
+*process_all_input_files - functie de procesare main
+Aici initializez array de fisiere, array de mapere, array de reducere si matricea cu toate rezultatele mapperului
+creez threadurile si le pornesc
+
+
+*process
+Functia process este functia data ca parametru in momentul crearii threadurilor de mapper.
+In cadrul ei se regaseste un mutex care functioneaza in felul urmator:
+Parcurg toate fisierele pe care le am de procesat si verific la fiecare daca a fost sau nu procesat pana acum.
+Daca nu a mai fost procesat, blochez zona de memorie, marchez ca fiind procesat, scriu numele fisierului
+in structura mapperului caruia i-a fost asignat, trimit structura mapperului catre o functie care proceseaza un singur
+fisier si in final deblochez blocul de memorie. Mutexul este necesar in cazul acesta doarece poate aparea
+situatia in care doua threaduri vad simultan respectiva de memorie de conditionare (procesat=0) vor marca amandoua
+zona respectiva cu 1 si vor incepe amandoua procesarea fisierului. Astfel, cu un mutex, doar primul thread care ajunge, e singurul care si reuseste
+sa modifice campuri si sa proceseze fiiserul.
+
+
+**process_input_file
+Functie data ca parametru lui process care parcurge fisierul, adauga toate numerele intr-o lista si apoi parcurge
+toti exponentii candidati(pana la nr de reduceri + 1), si in caz ca gaseste un exponent pt care numarul este perfect power
+il adauga in lista corespunzatoare lui
+
+
+*reduce_colon
+Lipeste toate listele de la mappere(pe o anumita coloana data de campul nr din structura unui reducer), dupa
+le sorteaza crescator, elimina duplicatele, numara elementele unice si in final scrie raspunsul intr-un fisier de output.
+
+
+++Folosesc o bariera astfel incat threadurile de reduce sa astepte terminarea threadurilor de  mapper.
+acest lucru se intampla pt ca toate obiectele mapper si reducer stiu referinta aceleasi bariere, 
+iar la inceputul functiei de reduce bariera asteapta terminarea threadurilor incepute inainte(adica cele ale 
+mapperului)
+
+  
